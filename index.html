@@ -198,7 +198,15 @@
      iOS-style — pagina Oggi (.ios-*)
      Card morbide, tiles colorate grandi, ombre soffici.
      ============================================================ */
-  .ios-page{max-width:920px;margin:0 auto;font-family:var(--font-sans)}
+  .ios-page{max-width:960px;margin:0 auto;font-family:var(--font-sans)}
+
+  /* Header compatto (restyle giugno 2026) */
+  .ios-today-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:2px 0 22px;flex-wrap:wrap}
+  .ios-today-metrics{display:flex;gap:9px;flex-wrap:wrap}
+  /* Dischi abitudini */
+  .ios-dials{display:grid;grid-template-columns:repeat(auto-fit,minmax(74px,1fr));gap:16px 6px;padding:6px 2px 2px}
+  /* Due colonne Da fare | Agenda */
+  .ios-two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
 
   /* Hero header */
   .ios-hero{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:0 0 26px;flex-wrap:wrap}
@@ -1189,6 +1197,11 @@
     .content-board{grid-template-columns:1fr}
     .kanban{grid-template-columns:1fr}
     .ios-hero-date{font-size:25px}
+    .ios-two-col{grid-template-columns:1fr;gap:14px}
+    .ios-today-head{align-items:flex-start}
+    .ios-today-metrics{width:100%}
+    .ios-today-metrics > div{flex:1}
+    .ios-dials{grid-template-columns:repeat(auto-fit,minmax(64px,1fr));gap:14px 4px}
     #fab{bottom:calc(18px + env(safe-area-inset-bottom));right:16px}
     /* — Topbar: solo ☰ + cattura veloce — */
     #rail-toggle,#focus-toggle,#compact-toggle{display:none}  /* concetti desktop, nascosti anche in sidebar */
@@ -1250,6 +1263,7 @@
         <div class="nav-item" onclick="closeMobileDrawer();openFocusModal()"><span class="ico">▶</span>Focus</div>
         <div class="nav-item" id="g-closeday" onclick="closeMobileDrawer();openCloseDayModal()"><span class="ico">🌙</span>Chiudi giornata</div>
         <div class="nav-item" onclick="closeMobileDrawer();openInboxModal()"><span class="ico">⊞</span>Inbox <span class="count" id="g-inbox-cnt" style="display:none">0</span></div>
+        <div class="nav-item" data-view="focus-history"><span class="ico">◴</span>Storico focus</div>
         <div class="nav-item" onclick="closeMobileDrawer();openCommandPalette()"><span class="ico">⌕</span>Cerca <span style="margin-left:auto;font-size:10px;color:var(--mountain)">⌘K</span></div>
         <div class="nav-item" id="rail-toggle" onclick="toggleRail()"><span class="ico">▤</span>Pannello destro</div>
         <div class="nav-item" id="focus-toggle" onclick="toggleFocusMode()"><span class="ico">◉</span>Modalità focus</div>
@@ -1313,7 +1327,7 @@
 
     <div style="flex:1"></div>
     <div style="padding:12px 16px;font-size:10.5px;color:var(--mountain);border-top:1px solid rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <div><b style="color:var(--accent-life)">v4.18</b> · <span id="lastsave">—</span> · <span id="sync-status"></span></div>
+      <div><b style="color:var(--accent-life)">v4.19</b> · <span id="lastsave">—</span> · <span id="sync-status"></span></div>
       <span class="kbd" title="Apri command palette">⌘K</span>
     </div>
   </aside>
@@ -5609,6 +5623,7 @@ function render(){
   const banner = backupBannerHtml();
   // VITA
   if(v === 'life-today')            c.innerHTML = viewLifeToday();
+  else if(v === 'focus-history')    c.innerHTML = viewFocusHistory();
   else if(v === 'life-month')       c.innerHTML = viewLifeMonth();
   else if(v === 'life-charts')      c.innerHTML = viewLifeCharts();
   else if(v === 'life-years')       c.innerHTML = viewLifeYears();
@@ -8158,6 +8173,59 @@ function viewContentPerformance(){
 /* =========================================================
    VITA — Today
    ========================================================= */
+function viewFocusHistory(){
+  const sessions = state.focusSessions || [];
+  const byDay = {};
+  sessions.forEach(s => { byDay[s.date] = (byDay[s.date]||0) + (s.minutes||0); });
+  const today = toISO(new Date());
+  const todayMin = byDay[today] || 0;
+  // ultimi 30 giorni
+  const days = [];
+  for(let i=29; i>=0; i--){ const d = new Date(); d.setDate(d.getDate()-i); days.push(toISO(d)); }
+  const weekStart = toISO(startOfWeek(new Date()));
+  const weekMin = Object.entries(byDay).filter(([d])=>d>=weekStart && d<=today).reduce((a,[,m])=>a+m,0);
+  const mk = monthKey(new Date());
+  const monthMin = Object.entries(byDay).filter(([d])=>d.startsWith(mk)).reduce((a,[,m])=>a+m,0);
+  const fmt = m => m>=60 ? `${Math.floor(m/60)}h${m%60?String(m%60).padStart(2,'0'):''}` : `${m}m`;
+  const maxMin = Math.max(60, ...days.map(d=>byDay[d]||0));
+  const bars = days.map(d => {
+    const m = byDay[d]||0;
+    const h = Math.round((m/maxMin)*120);
+    const isToday = d===today;
+    const dd = parseDateISO(d);
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;min-width:0">
+      <div style="font-size:9px;color:var(--mountain);white-space:nowrap">${m?fmt(m):''}</div>
+      <div title="${fmtDate(d)}: ${fmt(m)}" style="width:100%;max-width:18px;height:${Math.max(2,h)}px;border-radius:5px;background:${m?'var(--accent-uni)':'var(--sand)'};${isToday?'outline:2px solid var(--accent-uni);outline-offset:1px':''};transition:height .3s"></div>
+      <div style="font-size:9px;color:${isToday?'var(--accent-uni)':'var(--mountain)'};font-weight:${isToday?700:400}">${dd.getDate()}</div>
+    </div>`;
+  }).join('');
+  // log recente
+  const recent = sessions.slice().sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,25);
+  const AREA_LBL = { 'thesis':'Bocconi','study':'MDBI','mdbi':'MDBI','bocconi':'Bocconi','vita':'Vita','salute':'Salute','finanze':'Finanze','altro':'Altro' };
+  const recentHtml = recent.length ? recent.map(s => `
+    <div style="display:flex;gap:10px;align-items:center;font-size:12.5px;padding:6px 0;border-bottom:1px dotted var(--sand-soft)">
+      <span style="width:78px;color:var(--mountain)">${fmtDate(s.date)}</span>
+      <span style="flex:1">${escapeHTML(AREA_LBL[s.area]||s.area||'Focus')}</span>
+      <span style="font-family:var(--font-serif);font-weight:700">${fmt(s.minutes||0)}</span>
+    </div>`).join('') : '<div style="font-size:12.5px;color:var(--mountain)">Nessuna sessione registrata. Avvia un timer Focus dagli Strumenti.</div>';
+  return `
+    <div class="topbar">
+      <div><div class="eyebrow">Strumenti</div><h1>Storico focus</h1></div>
+      <div class="actions"><button class="primary" onclick="openFocusModal()">▶ Avvia focus</button></div>
+    </div>
+    <div class="grid grid-3" style="gap:12px;margin-bottom:18px">
+      <div class="stat"><div class="lbl">Oggi</div><div class="num">${fmt(todayMin)}</div></div>
+      <div class="stat"><div class="lbl">Questa settimana</div><div class="num">${fmt(weekMin)}</div></div>
+      <div class="stat"><div class="lbl">Questo mese</div><div class="num">${fmt(monthMin)}</div></div>
+    </div>
+    <div class="card mb-l">
+      <h3>Ultimi 30 giorni</h3>
+      <div style="display:flex;align-items:flex-end;gap:3px;height:150px;padding-top:8px">${bars}</div>
+    </div>
+    <div class="card"><h3>Sessioni recenti</h3>${recentHtml}</div>
+  `;
+}
+
 function viewLifeToday(){
   const today = toISO(new Date());
   const mk = monthKey(new Date());
@@ -8170,53 +8238,30 @@ function viewLifeToday(){
   const slotNames = { breakfast:'Colaz', lunch:'Pranzo', snack:'Snack', dinner:'Cena' };
   const expanded = state._todayExpand || {};
 
-  // === Pill renderer (categorie come pillole orizzontali, design warm/paper) ===
-  const pillHtml = cats.map(c => {
+  // === Dial renderer (categorie come dischi compatti — restyle giugno 2026) ===
+  const dialHtml = cats.map(c => {
     const isLinkedSkip = c.linkedTo === 'skip';
-    const isLinkedFood = c.linkedTo === 'food';
     const autoChecked = isLinkedSkip && state.tasks.some(t => t.completedAt === today);
-    const checked = isCategoryChecked(today, c);
+    const checked = isCategoryChecked(today, c) || (isLinkedSkip && autoChecked);
     const todos = (state.habitTodos[today] || {})[c.id] || [];
     const recurrings = recurringTodosFor(today, c.id);
     const catEvents = eventsForCategory(today, c.id);
     const catGoals = goalsForCategory(today, c.id);
     const doneCount = todos.filter(t=>t.done).length + recurrings.filter(rt => recurringStatusFor(today, rt.id)).length + catEvents.filter(e => e.done).length + catGoals.filter(g => goalStatusFor(today, g.id)).length;
     const totalCount = todos.length + recurrings.length + catEvents.length + catGoals.length;
-    const foodEntries = isLinkedFood ? (state.foodLog[today] || []) : [];
-    const foodEaten = foodEntries.filter(e => e.eaten !== false).length;
-    // Slot pianificati nel foodPlan (breakfast/lunch/snack/dinner)
-    const FOOD_SLOTS = ['breakfast','lunch','snack','dinner'];
-    const todayPlan = isLinkedFood ? (state.foodPlan[today] || {}) : {};
-    const plannedSlots = FOOD_SLOTS.filter(s => todayPlan[s]);
-    const planStatus = state.foodPlanStatus[today] || {};
-    const plannedDone = plannedSlots.filter(s => !!planStatus[s]).length;
-    const pos = catPosition(c.id, mk);
-
-    // Badge (in alto a dx) + sottotitolo di stato
-    let badge = '+', subLbl = 'da fare';
-    if((isLinkedSkip && autoChecked) || checked){
-      badge = '✓'; subLbl = 'fatta';
-    } else if(totalCount){
-      badge = `${doneCount}/${totalCount}`; subLbl = `${doneCount}/${totalCount} to-do`;
-    } else if(isLinkedFood && plannedSlots.length){
-      badge = `${plannedDone}/${plannedSlots.length}`; subLbl = `${plannedDone}/${plannedSlots.length} pasti`;
-    } else if(isLinkedFood && foodEntries.length){
-      badge = `${foodEaten}/${foodEntries.length}`; subLbl = `${foodEaten}/${foodEntries.length} pasti`;
-    }
-
     const isActive = expanded[c.id] === true;
-    const clickAction = `toggleTodayCatExpand('${c.id}')`;
-
+    const col = CAT_OUTLINE[c.color] || '#16244A';
+    const grad = tileBg(c.color);
+    const cnt = (!checked && totalCount) ? `<span style="position:absolute;top:-3px;right:-3px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:${col};color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--paper)">${doneCount}/${totalCount}</span>` : '';
+    const inner = checked
+      ? `<span style="color:#fff;font-size:25px;line-height:1">✓</span>`
+      : `<span style="color:${col};font-size:22px;line-height:1;font-family:var(--font-serif)">${c.ico||'•'}</span>`;
     return `
-      <div class="ios-tile ${checked?'checked':''} ${isActive?'active':''}" onclick="${clickAction}" title="${escapeHTML(c.name)}"
-           style="background:${tileBg(c.color)};${checked?'':'filter:saturate(.62) opacity(.92);'}">
-        <span class="ios-tile-pos">${pos}</span>
-        <span class="ios-tile-badge" style="${badge==='✓'?'background:rgba(255,255,255,0.92);color:#1D1D1F;':''}">${badge}</span>
-        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;color:#fff;padding:10px">
-          <span class="ios-tile-icon">${c.ico||'•'}</span>
-          <span class="ios-tile-name">${escapeHTML(c.name)}</span>
-          <span class="ios-tile-sub">${subLbl}</span>
+      <div onclick="toggleTodayCatExpand('${c.id}')" title="${escapeHTML(c.name)}" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px">
+        <div style="position:relative;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:transform .2s cubic-bezier(.32,1.45,.5,1),box-shadow .2s;${checked?`background:${grad};box-shadow:0 7px 18px -6px ${col}b3`:`background:var(--paper);border:2px dashed ${col}59;box-shadow:0 2px 8px -4px rgba(16,23,54,0.12)`}${isActive?`outline:2.5px solid ${col};outline-offset:3px;transform:translateY(-2px)`:''}">
+          ${inner}${cnt}
         </div>
+        <span style="font-size:11.5px;font-weight:700;color:${checked?'var(--mahogany)':'var(--mountain)'};letter-spacing:-0.01em;text-align:center">${escapeHTML(c.name)}</span>
       </div>
     `;
   }).join('') || '';
@@ -8420,87 +8465,75 @@ function viewLifeToday(){
   const greet = hour < 6 ? 'Notte fonda' : hour < 12 ? 'Buongiorno' : hour < 14 ? 'Mezzogiorno' : hour < 18 ? 'Buon pomeriggio' : hour < 22 ? 'Buonasera' : 'Buonanotte';
   const dateLabel = now.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
   const pctVal = score.total ? Math.round(score.pct*100) : 0;
-  const pctClass = score.pos===true ? 'ok' : (score.pos===false ? 'fail' : '');
   const ringColor = score.pos===true ? 'var(--ok)' : (score.pos===false ? 'var(--p0)' : 'var(--mahogany)');
-  const ringBg = `conic-gradient(${ringColor} ${pctVal}%, rgba(0,0,0,0.1) 0)`;
+
+  // Metriche header
+  const streak = (state.game && state.game.streak ? (state.game.streak.current||0) : 0);
+  const focusMin = (state.focusSessions||[]).filter(s => s.date === today).reduce((a,s)=>a+(s.minutes||0),0);
+  const focusLabel = focusMin>=60 ? `${Math.floor(focusMin/60)}h${focusMin%60?String(focusMin%60).padStart(2,'0'):''}` : `${focusMin}m`;
+  const chip = (big, lbl, color, action) => `<div ${action?`onclick="${action}" style="cursor:pointer;`:'style="'}text-align:center;background:linear-gradient(180deg,#FFFFFF,#F7F9FE);border:0.5px solid var(--sand);border-radius:15px;padding:8px 15px;box-shadow:0 6px 16px -10px rgba(16,23,54,0.22),inset 0 1px 0 rgba(255,255,255,0.9)"><div style="font-family:var(--font-serif);font-size:21px;font-weight:700;line-height:1;color:${color||'var(--mahogany)'}">${big}</div><div style="font-size:9.5px;color:var(--mountain);margin-top:3px;text-transform:uppercase;letter-spacing:0.06em;font-weight:700">${lbl}</div></div>`;
+
+  const verdict = score.pos === true ? `
+      <div class="ios-verdict ok focus-hide"><span class="ico">✓</span><span><strong>Giornata positiva.</strong> ${score.checked}/${score.total} categorie completate.</span></div>`
+    : score.pos === false ? `
+      <div class="ios-verdict fail focus-hide"><span class="ico">○</span><span><strong>Sotto soglia.</strong> ${Math.ceil(score.total*0.8 - score.checked)} cat. da chiudere per salvare la giornata.</span></div>` : '';
 
   return `
     <div class="ios-page">
 
-      <!-- HERO HEADER -->
-      <div class="ios-hero">
-        <div class="ios-hero-left">
+      <!-- HEADER COMPATTO -->
+      <div class="ios-today-head">
+        <div>
           <div class="ios-hero-greet">${greet}, Ginni</div>
           <h1 class="ios-hero-date">${dateLabel}</h1>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:8px;flex-wrap:wrap">${moodHtml}${routineHtml}</div>
         </div>
-        <div class="ios-hero-right">
-          ${moodHtml}
-          ${score.total ? `
-            <div class="ios-ring" style="background:${ringBg}" title="${score.checked} su ${score.total} categorie">
-              <div class="ios-ring-inner">
-                <div class="ios-ring-pct ${pctClass}">${pctVal}%</div>
-                <div class="ios-ring-lbl">${score.checked}/${score.total}</div>
-              </div>
-            </div>
-          ` : routineHtml}
+        <div class="ios-today-metrics">
+          ${chip(score.total?pctVal+'%':'—', 'giornata', ringColor)}
+          ${chip(streak, 'streak', 'var(--accent-fin)')}
+          ${chip(focusLabel, 'focus oggi', 'var(--accent-uni)', "setView('focus-history')")}
         </div>
       </div>
 
-      <!-- DA FARE -->
-      <div class="ios-card">
-        <div class="ios-card-head">
-          <h3 class="ios-card-title">Da fare</h3>
-          <div class="ios-card-meta">
-            ${genOpen.length ? `<span>${genOpen.length} ${genOpen.length===1?'task':'task'}${genOpen.filter(t=>t.priority==='high').length ? ` · ${genOpen.filter(t=>t.priority==='high').length} priorità` : ''}</span>` : ''}
-          </div>
-        </div>
-        ${todosBody}
-      </div>
-
-      <!-- AGENDA -->
+      <!-- ABITUDINI DI OGGI (hero) -->
       <div class="ios-card focus-hide">
         <div class="ios-card-head">
-          <h3 class="ios-card-title">Agenda di oggi</h3>
-          <div class="ios-card-meta">
-            <button class="link" onclick="setView('cal-week')">Settimana →</button>
-            <button class="pill-btn" onclick="openEventModal(null,{date:'${today}'})">+ Evento</button>
-          </div>
-        </div>
-        ${agendaBody}
-      </div>
-
-      <!-- CATEGORIE / TILES -->
-      <div class="ios-card focus-hide">
-        <div class="ios-card-head">
-          <h3 class="ios-card-title">Abitudini del mese</h3>
-          <div class="ios-card-meta">
-            <span>soglia 80%${score.total?` · ${score.checked}/${score.total}`:''}</span>
-          </div>
+          <h3 class="ios-card-title">Abitudini di oggi</h3>
+          <div class="ios-card-meta"><span>${score.total?`${score.checked}/${score.total} · `:''}soglia 80%</span></div>
         </div>
         ${cats.length ? `
-          <div class="ios-tiles">${pillHtml}</div>
+          <div class="ios-dials">${dialHtml}</div>
           ${catDetails ? `<div style="margin-top:14px">${catDetails}</div>` : ''}
         ` : `
           <div class="ios-empty" style="padding:24px 12px">
             <p style="margin:0 0 14px">Nessuna categoria impostata.</p>
-            <button onclick="setView('life-month')" style="background:var(--mahogany);color:#fff;border:none;padding:8px 18px;border-radius:99px;font-weight:600;cursor:pointer;font-family:inherit">Imposta categorie →</button>
+            <button onclick="setView('life-month')" style="background:var(--mahogany);color:#fff;border:none;padding:8px 18px;border-radius:99px;font-weight:700;cursor:pointer;font-family:inherit">Imposta categorie →</button>
           </div>
         `}
       </div>
 
-      <!-- VERDETTO -->
-      ${score.pos === true ? `
-        <div class="ios-verdict ok focus-hide">
-          <span class="ico">✓</span>
-          <span><strong>Giornata positiva.</strong> ${score.checked}/${score.total} categorie completate.</span>
+      <!-- DUE COLONNE: Da fare | Agenda -->
+      <div class="ios-two-col">
+        <div class="ios-card">
+          <div class="ios-card-head">
+            <h3 class="ios-card-title">Da fare</h3>
+            <div class="ios-card-meta">${genOpen.length ? `<span>${genOpen.length} task${genOpen.filter(t=>t.priority==='high').length ? ` · ${genOpen.filter(t=>t.priority==='high').length} priorità` : ''}</span>` : ''}</div>
+          </div>
+          ${todosBody}
         </div>
-      ` : score.pos === false ? `
-        <div class="ios-verdict fail focus-hide">
-          <span class="ico">○</span>
-          <span><strong>Sotto soglia.</strong> ${Math.ceil(score.total*0.8 - score.checked)} cat. da chiudere per salvare la giornata.</span>
+        <div class="ios-card focus-hide">
+          <div class="ios-card-head">
+            <h3 class="ios-card-title">Agenda</h3>
+            <div class="ios-card-meta">
+              <button class="link" onclick="setView('cal-week')">Settimana →</button>
+              <button class="pill-btn" onclick="openEventModal(null,{date:'${today}'})">+ Evento</button>
+            </div>
+          </div>
+          ${agendaBody}
         </div>
-      ` : ''}
+      </div>
 
+      ${verdict}
     </div>
   `;
 }
