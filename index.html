@@ -1310,7 +1310,7 @@
 
     <div style="flex:1"></div>
     <div style="padding:12px 16px;font-size:10.5px;color:var(--mountain);border-top:1px solid rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <div><b style="color:var(--accent-life)">v4.25</b> · <span id="lastsave">—</span> · <span id="sync-status"></span></div>
+      <div><b style="color:var(--accent-life)">v4.26</b> · <span id="lastsave">—</span> · <span id="sync-status"></span></div>
       <span class="kbd" title="Apri command palette">⌘K</span>
     </div>
   </aside>
@@ -3021,6 +3021,9 @@ let state = {
     },
     moodEnergy: {
       log: {}                 // 'YYYY-MM-DD' -> {mood:1-5, energy:1-5, note}
+    },
+    vitals: {
+      log: {}                 // 'YYYY-MM-DD' -> {steps, activeKcal, sleepMin, restHr, avgHr} — da Apple Salute via Shortcut
     }
   },
   // Nuovo modello task (rebuild): usa 'area' + 'importance:1-5' + 'priority:1-3' (clusterizzata)
@@ -3305,9 +3308,38 @@ document.addEventListener('visibilitychange', () => {
     gistQuietPull();
   }
 });
-window.addEventListener('focus', () => { if(gistAutoEnabled()) gistQuietPull(); });
+window.addEventListener('focus', () => { if(gistAutoEnabled()){ gistQuietPull(); gistHealthImport(); } });
 // Poll periodico mentre l'app è aperta e in primo piano (~ogni 25s)
-setInterval(() => { if(gistAutoEnabled() && document.visibilityState === 'visible') gistQuietPull(); }, 25000);
+setInterval(() => { if(gistAutoEnabled() && document.visibilityState === 'visible'){ gistQuietPull(); gistHealthImport(); } }, 25000);
+
+// Import dati Apple Salute dal file 'health-feed.json' nel Gist (scritto dal Comando iPhone)
+async function gistHealthImport(){
+  if(!gistAutoEnabled() || _gistHealthBusy) return;
+  _gistHealthBusy = true;
+  const cfg = gistCfg();
+  try{
+    const r = await fetch(`https://api.github.com/gists/${cfg.gistId}`, { headers:{ 'Authorization':'token '+cfg.token, 'Accept':'application/vnd.github+json' } });
+    if(!r.ok){ _gistHealthBusy=false; return; }
+    const j = await r.json();
+    const file = j.files && j.files['health-feed.json'];
+    if(!file || !file.content){ _gistHealthBusy=false; return; }
+    let data; try{ data = JSON.parse(file.content); }catch(e){ _gistHealthBusy=false; return; }
+    const entries = Array.isArray(data) ? data : [data];
+    if(!state.health.vitals) state.health.vitals = { log:{} };
+    if(!state.health.vitals.log) state.health.vitals.log = {};
+    let changed = false;
+    entries.forEach(e => {
+      if(!e || !e.date) return;
+      const cur = state.health.vitals.log[e.date] || {};
+      const next = { ...cur };
+      ['steps','activeKcal','sleepMin','restHr','avgHr'].forEach(k => { if(e[k] != null && e[k] !== '' && !isNaN(Number(e[k]))) next[k] = Number(e[k]); });
+      if(JSON.stringify(next) !== JSON.stringify(cur)){ state.health.vitals.log[e.date] = next; changed = true; }
+    });
+    if(changed){ saveState(); if(typeof render === 'function') render(); }
+  }catch(e){}
+  _gistHealthBusy = false;
+}
+let _gistHealthBusy = false;
 
 // Funzione esposta per ri-scaricare il backup manualmente (es. dalle Impostazioni)
 function downloadArchivedV3(){
@@ -3831,6 +3863,8 @@ function loadState(){
     if(state.health && state.health.workout){
       if(!Array.isArray(state.health.workout.plan)) state.health.workout.plan = [];
       if(!state.health.workout.planSkips || typeof state.health.workout.planSkips !== 'object') state.health.workout.planSkips = {};
+      if(!state.health.vitals || typeof state.health.vitals !== 'object') state.health.vitals = { log:{} };
+      if(!state.health.vitals.log) state.health.vitals.log = {};
     }
     // Piano esami: storage spunte studio
     if(state.uni && !state.uni.studyPlan){ state.uni.studyPlan = { studied:{} };
@@ -5709,6 +5743,7 @@ function render(){
   else if(v === 'weight')           c.innerHTML = viewWeight();
   else if(v === 'health-workout')   c.innerHTML = viewHealthWorkout();
   else if(v === 'health-sleep')     c.innerHTML = viewHealthSleep();
+  else if(v === 'health-vitals')    c.innerHTML = viewHealthVitals();
   else if(v === 'health-hydration') c.innerHTML = viewHealthHydration();
   else if(v === 'health-mood')      c.innerHTML = viewHealthMoodEnergy();
   // STUDIO
@@ -6304,6 +6339,63 @@ function openSleepTargetModal(){
 }
 
 /* ---- Idratazione ---- */
+function setVital(field, val){
+  const today = todayISO();
+  if(!state.health.vitals) state.health.vitals = { log:{} };
+  if(!state.health.vitals.log[today]) state.health.vitals.log[today] = {};
+  const n = parseFloat(val);
+  if(val === '' || isNaN(n)) delete state.health.vitals.log[today][field];
+  else state.health.vitals.log[today][field] = n;
+  saveState(); render();
+}
+function viewHealthVitals(){
+  const today = todayISO();
+  const log = (state.health.vitals && state.health.vitals.log) || {};
+  const v = log[today] || {};
+  const fmtSleep = m => (m==null||m==='') ? '—' : `${Math.floor(m/60)}h${String(Math.round(m%60)).padStart(2,'0')}`;
+  // ultimi 7 giorni passi
+  const days = []; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); days.push(toISO(d)); }
+  const maxSteps = Math.max(8000, ...days.map(d=>(log[d]||{}).steps||0));
+  const bars = days.map(d => {
+    const st = (log[d]||{}).steps||0;
+    const h = Math.round((st/maxSteps)*90);
+    const isT = d===today; const dd = parseDateISO(d);
+    return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+      <div style="font-size:9px;color:var(--mountain)">${st?Math.round(st/1000)+'k':''}</div>
+      <div style="width:100%;max-width:20px;height:${Math.max(2,h)}px;border-radius:5px;background:${st?'var(--accent-food)':'var(--sand)'};${isT?'outline:2px solid var(--accent-food);outline-offset:1px':''}"></div>
+      <div style="font-size:9px;color:${isT?'var(--accent-food)':'var(--mountain)'};font-weight:${isT?700:400}">${dd.getDate()}</div>
+    </div>`;
+  }).join('');
+  const card = (lbl, val, sub, color) => `<div class="stat"><div class="lbl">${lbl}</div><div class="num" style="color:${color}">${val}</div><div class="lbl" style="text-transform:none;margin-top:2px">${sub||''}</div></div>`;
+  const fld = (lbl, field, ph) => `<div class="field" style="margin-bottom:8px"><label>${lbl}</label><input type="number" value="${v[field]!=null?v[field]:''}" placeholder="${ph||''}" onchange="setVital('${field}',this.value)"></div>`;
+  return `
+    <div class="topbar">
+      <div><div class="eyebrow">Salute</div><h1>Vitali</h1></div>
+    </div>
+    <div class="grid grid-4" style="gap:12px;margin-bottom:18px">
+      ${card('Passi', v.steps!=null?Number(v.steps).toLocaleString('it-IT'):'—', 'oggi', 'var(--accent-food)')}
+      ${card('Calorie attive', v.activeKcal!=null?Math.round(v.activeKcal)+' kcal':'—', 'bruciate oggi', 'var(--accent-life)')}
+      ${card('Sonno', fmtSleep(v.sleepMin), 'ultima notte', 'var(--accent-uni)')}
+      ${card('Cuore', v.avgHr!=null?Math.round(v.avgHr)+' bpm':(v.restHr!=null?Math.round(v.restHr)+' bpm':'—'), v.restHr!=null?`riposo ${Math.round(v.restHr)}`:'media oggi', 'var(--accent-content)')}
+    </div>
+    <div class="card mb-l">
+      <h3>Passi · ultimi 7 giorni</h3>
+      <div style="display:flex;align-items:flex-end;gap:4px;height:120px;padding-top:8px">${bars}</div>
+    </div>
+    <div class="card">
+      <h3>Inserisci a mano (oggi)</h3>
+      <p class="txt-muted" style="font-size:12px;margin-bottom:12px">Se hai configurato il Comando iPhone questi si riempiono da soli da Apple Salute. Altrimenti li scrivi qui.</p>
+      <div class="grid grid-2" style="gap:8px">
+        ${fld('Passi','steps','es. 8400')}
+        ${fld('Calorie attive (kcal)','activeKcal','es. 520')}
+        ${fld('Sonno (minuti)','sleepMin','es. 450')}
+        ${fld('Freq. cardiaca media (bpm)','avgHr','es. 72')}
+        ${fld('Freq. a riposo (bpm)','restHr','es. 58')}
+      </div>
+    </div>
+  `;
+}
+
 function viewHealthHydration(){
   const h = state.health.hydration;
   const todayIso = todayISO();
@@ -11859,12 +11951,12 @@ function matchUniWithEvents(){
 /* ---------- Vista lista materie (15 card) ---------- */
 /* ---------- Hub generici (Salute / Finanze / Review): una pagina a tab ---------- */
 const HUB_VIEW_FN = {
-  'health-workout':viewHealthWorkout,'health-sleep':viewHealthSleep,'food-diary':viewFoodDiary,'food-db':viewFoodDB,'shopping':viewShoppingList,'weight':viewWeight,'health-hydration':viewHealthHydration,'health-mood':viewHealthMoodEnergy,
+  'health-workout':viewHealthWorkout,'health-sleep':viewHealthSleep,'health-vitals':viewHealthVitals,'food-diary':viewFoodDiary,'food-db':viewFoodDB,'shopping':viewShoppingList,'weight':viewWeight,'health-hydration':viewHealthHydration,'health-mood':viewHealthMoodEnergy,
   'fin-dashboard':viewFinDashboard,'fin-transactions':viewFinTransactions,'fin-budgets':viewFinBudgets,
   'review':viewWeeklyReview,'goals':viewGoals,'life-month':viewLifeMonth,'life-charts':viewLifeCharts,'life-years':viewLifeYears,'game-stats':viewGameStats,'focus-history':viewFocusHistory,
 };
 const HUBS = {
-  salute:{eyebrow:'Salute', accent:'var(--accent-food)', tabs:[['health-workout','Workout'],['health-sleep','Sonno'],['food-diary','Cibo'],['food-db','Database'],['shopping','Spesa'],['weight','Peso'],['health-hydration','Idratazione'],['health-mood','Mood']]},
+  salute:{eyebrow:'Salute', accent:'var(--accent-food)', tabs:[['health-workout','Workout'],['health-vitals','Vitali'],['health-sleep','Sonno'],['food-diary','Cibo'],['food-db','Database'],['shopping','Spesa'],['weight','Peso'],['health-hydration','Idratazione'],['health-mood','Mood']]},
   fin:{eyebrow:'Finanze', accent:'var(--accent-fin)', tabs:[['fin-dashboard','Dashboard'],['fin-transactions','Transazioni'],['fin-budgets','Budget']]},
   review:{eyebrow:'Review & Analisi', accent:'var(--accent-life)', tabs:[['review','Weekly review'],['goals','Goals'],['life-month','Mese'],['life-charts','Grafici'],['life-years','Anni'],['game-stats','Stats'],['focus-history','Focus']]},
 };
@@ -13658,6 +13750,7 @@ setView('life-today');
 updateBreadcrumb();
 bootRebuildV4();
 gistAutoPullOnLoad();   // auto-sync: scarica dal cloud se più recente (chiede se c'è conflitto)
+gistHealthImport();     // importa i dati Apple Salute mandati dal Comando iPhone
 
 document.addEventListener('keydown', e => {
   if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
