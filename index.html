@@ -36,27 +36,27 @@
 
     /* Stati — semantici, vivaci */
     --p0:#F03E3E;               /* rosso — alert massimi */
-    --p1:#F59F00;               /* ambra — medio */
+    --p1:#E64980;               /* magenta — medio */
     --p2:#5C6B92;               /* navy-grey muted */
     --ok:#12B886;               /* verde-teal — positivo */
     --ok-soft:#63D9B0;          /* verde-teal chiaro */
-    --warn:#F59F00;             /* ambra — assignment */
+    --warn:#E64980;             /* magenta — assignment/attenzione (era ambra) */
     --fail:#F03E3E;             /* rosso — scadenze */
 
-    /* Accenti decorativi (categorie habit) — vivaci e distinti */
+    /* Accenti decorativi (categorie habit) — vivaci e distinti, zero arancio */
     --olive:#12B886;            /* teal-green */
-    --terracotta:#FF6B4A;       /* corallo */
+    --terracotta:#FA5252;       /* rosso freddo (era corallo) */
     --plum:#9B51E0;             /* viola */
     --sage:#0CA5C0;             /* ottanio */
     --dusk:#3D5AFE;             /* indaco vivace */
 
     /* Accenti modulo — navy + accenti vivaci, distinti per categoria */
-    --accent-life:#FF6B4A;      /* vita — corallo */
-    --accent-life-soft:#FFE9E2;
+    --accent-life:#FA5252;      /* vita — rosso freddo */
+    --accent-life-soft:#FFE3E3;
     --accent-food:#12B886;      /* salute — teal */
     --accent-food-soft:#DCF7EE;
-    --accent-fin:#F59F00;       /* finanze — ambra */
-    --accent-fin-soft:#FFF1DC;
+    --accent-fin:#E64980;       /* finanze — magenta (era ambra) */
+    --accent-fin-soft:#FCE4EE;
     --accent-skip:#2D6CDF;      /* skip — blu */
     --accent-skip-soft:#E2ECFB;
     --accent-content:#9B51E0;   /* content — viola */
@@ -735,8 +735,8 @@
   .breadcrumb-bar b{color:var(--mahogany);font-weight:600}
 
   /* Streak counter */
-  .g-streak{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:linear-gradient(135deg,rgba(255,149,0,0.10),rgba(255,59,48,0.10));border:0.5px solid rgba(255,149,0,0.30);border-radius:12px;cursor:pointer;transition:transform .15s,box-shadow .18s cubic-bezier(.32,.72,0,1);font-feature-settings:'tnum'}
-  .g-streak:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(255,149,0,0.18)}
+  .g-streak{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:linear-gradient(135deg,rgba(230,73,128,0.10),rgba(255,59,48,0.10));border:0.5px solid rgba(230,73,128,0.30);border-radius:12px;cursor:pointer;transition:transform .15s,box-shadow .18s cubic-bezier(.32,.72,0,1);font-feature-settings:'tnum'}
+  .g-streak:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(230,73,128,0.18)}
   .g-streak-fire{font-size:14px;line-height:1}
   .g-streak-num{font-size:15px;font-weight:700;color:var(--mahogany);letter-spacing:-0.02em}
   .g-streak-lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--mountain);font-weight:600;margin-right:4px}
@@ -778,7 +778,7 @@
   .rail-item:hover{background:#fff;transform:translateX(-2px)}
   .rail-item .rail-prio{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
   .rail-item .rail-prio.p1{background:#FF3B30}
-  .rail-item .rail-prio.p2{background:#FF9500}
+  .rail-item .rail-prio.p2{background:#E64980}
   .rail-item .rail-prio.p3{background:#86868B}
   .rail-item .rail-body{flex:1;min-width:0}
   .rail-item .rail-ttl{font-size:12.5px;color:var(--mahogany);font-weight:500;letter-spacing:-0.01em;line-height:1.3}
@@ -794,12 +794,12 @@
 
   /* Modal Task v4 */
   .task-imp-slider-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
-  .task-imp-slider-row input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:6px;background:linear-gradient(90deg,#86868B 0%,#86868B 20%,#FF9500 40%,#FF9500 60%,#FF3B30 80%,#FF3B30 100%);border-radius:999px;outline:none}
+  .task-imp-slider-row input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:6px;background:linear-gradient(90deg,#86868B 0%,#86868B 20%,#E64980 40%,#E64980 60%,#FF3B30 80%,#FF3B30 100%);border-radius:999px;outline:none}
   .task-imp-slider-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid var(--mahogany);cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.15)}
   .task-imp-value{font-size:18px;font-weight:700;color:var(--mahogany);min-width:32px;text-align:center;font-variant-numeric:tabular-nums}
   .task-imp-label{font-size:11px;color:var(--mountain);text-transform:uppercase;letter-spacing:0.08em;font-weight:600;min-width:70px;text-align:right}
   .task-imp-label.p1{color:#FF3B30}
-  .task-imp-label.p2{color:#FF9500}
+  .task-imp-label.p2{color:#E64980}
   .task-imp-label.p3{color:#86868B}
 
   /* Inbox modal */
@@ -898,7 +898,7 @@
      SALUTE · Workout / Sleep / Hydration / Mood
      ========================================================= */
   /* Workout — hero settimana */
-  .hw-week-card{background:linear-gradient(135deg,#FF9500 0%,#FF6B00 100%);color:#fff;border-radius:20px;padding:22px 24px;margin-bottom:18px;box-shadow:0 16px 36px -14px rgba(255,149,0,0.45);position:relative;overflow:hidden}
+  .hw-week-card{background:linear-gradient(135deg,#E64980 0%,#FF6B00 100%);color:#fff;border-radius:20px;padding:22px 24px;margin-bottom:18px;box-shadow:0 16px 36px -14px rgba(230,73,128,0.45);position:relative;overflow:hidden}
   .hw-week-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top right,rgba(255,255,255,0.20) 0%,transparent 55%);pointer-events:none}
   .hw-week-head{display:flex;justify-content:space-between;align-items:flex-end;position:relative;z-index:1;margin-bottom:14px}
   .hw-week-pct{font-size:32px;font-weight:200;letter-spacing:-0.03em;color:#fff;font-variant-numeric:tabular-nums;line-height:1}
@@ -937,7 +937,7 @@
   .hs-bar{flex:1;background:rgba(0,113,227,0.20);border-radius:3px 3px 0 0;min-height:2px;transition:opacity .15s}
   .hs-bar:hover{opacity:0.75}
   .hs-bar.on{background:linear-gradient(180deg,#34C759,#5DD178)}
-  .hs-bar.late{background:linear-gradient(180deg,#FF9500,#FFB75A)}
+  .hs-bar.late{background:linear-gradient(180deg,#E64980,#F783AC)}
   .hs-bar.empty{background:rgba(0,0,0,0.04);min-height:1px}
   .hs-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}
   .hs-stats > div{text-align:center}
@@ -955,7 +955,7 @@
   .hh-day{position:relative;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
   .hh-day-bar{width:80%;background:rgba(0,113,227,0.30);border-radius:4px 4px 0 0;min-height:4px;transition:all .18s}
   .hh-day.ok .hh-day-bar{background:#34C759}
-  .hh-day.partial .hh-day-bar{background:#FF9500}
+  .hh-day.partial .hh-day-bar{background:#E64980}
   .hh-day.empty .hh-day-bar{background:rgba(0,0,0,0.06);min-height:2px}
   .hh-day-num{font-size:9.5px;color:var(--mountain);margin-top:4px;font-variant-numeric:tabular-nums;font-weight:600}
   .hh-day.today .hh-day-num{color:var(--mahogany);font-weight:700}
@@ -996,7 +996,7 @@
   .cd-verdict-ring svg{transform:rotate(-90deg);width:130px;height:130px}
   .cd-verdict-bg{fill:none;stroke:rgba(0,0,0,0.08);stroke-width:6}
   .cd-verdict-fg{fill:none;stroke:#34C759;stroke-width:6;stroke-linecap:round;stroke-dasharray:0 277;transition:stroke-dasharray .8s cubic-bezier(.32,.72,0,1),stroke .4s}
-  .cd-verdict-fg.amber{stroke:#FF9500}
+  .cd-verdict-fg.amber{stroke:#E64980}
   .cd-verdict-fg.red{stroke:#FF3B30}
   .cd-verdict-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:300;color:var(--mahogany);font-variant-numeric:tabular-nums;letter-spacing:-0.03em}
   .cd-verdict-lbl{font-size:18px;font-weight:600;letter-spacing:-0.02em;color:var(--mahogany);margin-top:6px}
@@ -1008,7 +1008,7 @@
   .cd-section{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
   .cd-row{display:flex;align-items:center;gap:10px}
   .cd-row label{min-width:64px;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--mountain);font-weight:600;margin:0}
-  .cd-row input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:6px;border-radius:999px;outline:none;background:linear-gradient(90deg,#FF3B30 0%,#FF9500 50%,#34C759 100%)}
+  .cd-row input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:6px;border-radius:999px;outline:none;background:linear-gradient(90deg,#FF3B30 0%,#E64980 50%,#34C759 100%)}
   .cd-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;border:2px solid var(--mahogany);cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.15)}
 
   .cd-special{margin-top:14px;padding-top:14px;border-top:0.5px solid rgba(0,0,0,0.08)}
@@ -1063,7 +1063,7 @@
   .chores-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
   .cs-card{background:var(--paper);border:0.5px solid rgba(0,0,0,0.08);padding:14px;border-radius:12px;text-align:center;box-shadow:var(--shadow)}
   .cs-card.alert{border-color:var(--p0);background:rgba(255,59,48,0.04)}
-  .cs-card.warn{border-color:var(--warn);background:rgba(255,149,0,0.04)}
+  .cs-card.warn{border-color:var(--warn);background:rgba(230,73,128,0.04)}
   .cs-card b{display:block;font-size:24px;font-weight:600;color:var(--mahogany);font-variant-numeric:tabular-nums;letter-spacing:-0.02em}
   .cs-card.alert b{color:var(--p0)}
   .cs-card.warn b{color:var(--warn)}
@@ -1072,7 +1072,7 @@
   .chores-list{display:flex;flex-direction:column;gap:6px}
   .chore-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--paper);border:0.5px solid rgba(0,0,0,0.08);border-radius:12px;transition:all .15s cubic-bezier(.32,.72,0,1)}
   .chore-row:hover{box-shadow:var(--shadow-hover)}
-  .chore-row.due{border-left:3px solid var(--warn);background:rgba(255,149,0,0.03)}
+  .chore-row.due{border-left:3px solid var(--warn);background:rgba(230,73,128,0.03)}
   .chore-row.overdue{border-left:3px solid var(--p0);background:rgba(255,59,48,0.03)}
   .chore-done-btn{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--mountain);background:transparent;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--mountain);transition:all .15s cubic-bezier(.32,.72,0,1);flex-shrink:0}
   .chore-done-btn:hover{border-color:var(--ok);color:var(--ok);transform:scale(1.08)}
@@ -1115,7 +1115,7 @@
   .gs-cell{aspect-ratio:1;border-radius:3px;background:rgba(0,0,0,0.06);transition:transform .15s cubic-bezier(.32,1.5,.4,1)}
   .gs-cell:hover{transform:scale(1.25)}
   .gs-cell.green{background:#34C759}
-  .gs-cell.amber{background:#FF9500}
+  .gs-cell.amber{background:#E64980}
   .gs-cell.red{background:#FF3B30}
   .gs-cell.special{background:#5856D6}
   .gs-cell.none{background:rgba(0,0,0,0.06)}
@@ -1136,7 +1136,7 @@
   .gs-sleep-bars{display:flex;align-items:flex-end;gap:2px;height:60px;padding-top:4px;border-top:0.5px solid rgba(0,0,0,0.06)}
   .gs-sb{flex:1;background:#86868B;border-radius:2px 2px 0 0;min-height:2px;transition:opacity .15s}
   .gs-sb.on{background:linear-gradient(180deg,#34C759,#5DD178)}
-  .gs-sb.late{background:linear-gradient(180deg,#FF9500,#FFB75A)}
+  .gs-sb.late{background:linear-gradient(180deg,#E64980,#F783AC)}
   .gs-sb.empty{background:rgba(0,0,0,0.04);min-height:1px}
 
   /* Workout circular */
@@ -1263,8 +1263,6 @@
         <div class="nav-item" onclick="closeMobileDrawer();openFocusModal()"><span class="ico">▶</span>Focus</div>
         <div class="nav-item" id="g-closeday" onclick="closeMobileDrawer();openCloseDayModal()"><span class="ico">🌙</span>Chiudi giornata</div>
         <div class="nav-item" onclick="closeMobileDrawer();openInboxModal()"><span class="ico">⊞</span>Inbox <span class="count" id="g-inbox-cnt" style="display:none">0</span></div>
-        <div class="nav-item" data-view="focus-history"><span class="ico">◴</span>Storico focus</div>
-        <div class="nav-item" onclick="closeMobileDrawer();openCommandPalette()"><span class="ico">⌕</span>Cerca <span style="margin-left:auto;font-size:10px;color:var(--mountain)">⌘K</span></div>
         <div class="nav-item" id="rail-toggle" onclick="toggleRail()"><span class="ico">▤</span>Pannello destro</div>
         <div class="nav-item" id="focus-toggle" onclick="toggleFocusMode()"><span class="ico">◉</span>Modalità focus</div>
         <div class="nav-item" id="compact-toggle" onclick="toggleCompactMode()"><span class="ico">≡</span>Densità compatta</div>
@@ -1272,16 +1270,8 @@
     </div>
 
     <div class="nav-section" data-section="salute">
-      <div class="nav-title" onclick="toggleSection(&#39;salute&#39;)">Salute <span class="caret">▾</span></div>
-      <div class="nav-body">
-        <div class="nav-item" data-view="health-workout"><span class="ico">◆</span>Workout</div>
-        <div class="nav-item" data-view="health-sleep"><span class="ico">☾</span>Sveglia &amp; sonno</div>
-        <div class="nav-item" data-view="food-diary"><span class="ico">◎</span>Cibo · diario</div>
-        <div class="nav-item" data-view="food-db"><span class="ico">◇</span>Cibo · database</div>
-        <div class="nav-item" data-view="shopping"><span class="ico">▤</span>Lista spesa</div>
-        <div class="nav-item" data-view="weight"><span class="ico">△</span>Peso &amp; corpo</div>
-        <div class="nav-item" data-view="health-hydration"><span class="ico">○</span>Idratazione</div>
-        <div class="nav-item" data-view="health-mood"><span class="ico">♡</span>Mood &amp; energia</div>
+      <div class="nav-body" style="padding-top:8px">
+        <div class="nav-item" data-view="hub:salute"><span class="ico">♡</span>Salute</div>
       </div>
     </div>
 
@@ -1293,37 +1283,27 @@
       </div>
     </div>
 
-    <div class="nav-section collapsed" data-section="fin">
-      <div class="nav-title" onclick="toggleSection(&#39;fin&#39;)">Finanze <span class="caret">▾</span></div>
-      <div class="nav-body">
-        <div class="nav-item" data-view="fin-dashboard"><span class="ico">€</span>Dashboard</div>
-        <div class="nav-item" data-view="fin-transactions"><span class="ico">≡</span>Transazioni</div>
-        <div class="nav-item" data-view="fin-budgets"><span class="ico">◈</span>Budget</div>
+    <div class="nav-section" data-section="fin">
+      <div class="nav-body" style="padding-top:8px">
+        <div class="nav-item" data-view="hub:fin"><span class="ico">€</span>Finanze</div>
       </div>
     </div>
 
-    <div class="nav-section collapsed" data-section="analisi">
-      <div class="nav-title" onclick="toggleSection(&#39;analisi&#39;)">Review &amp; Analisi <span class="caret">▾</span></div>
-      <div class="nav-body">
-        <div class="nav-item" data-view="review"><span class="ico">◐</span>Weekly review</div>
-        <div class="nav-item" data-view="goals"><span class="ico">🎯</span>Goals</div>
-        <div class="nav-item" data-view="life-month"><span class="ico">▦</span>Mese</div>
-        <div class="nav-item" data-view="life-charts"><span class="ico">◮</span>Grafici</div>
-        <div class="nav-item" data-view="life-years"><span class="ico">◈</span>Anni</div>
+    <div class="nav-section" data-section="analisi">
+      <div class="nav-body" style="padding-top:8px">
+        <div class="nav-item" data-view="hub:review"><span class="ico">◐</span>Review &amp; Analisi</div>
       </div>
     </div>
 
     <div class="nav-section" data-section="sys">
-      <div class="nav-title" onclick="toggleSection(&#39;sys&#39;)">Sistema <span class="caret">▾</span></div>
-      <div class="nav-body">
-        <div class="nav-item" data-view="game-stats"><span class="ico">◮</span>Stats &amp; gioco</div>
+      <div class="nav-body" style="padding-top:8px">
         <div class="nav-item" data-view="settings"><span class="ico">⚙</span>Impostazioni</div>
       </div>
     </div>
 
     <div style="flex:1"></div>
     <div style="padding:12px 16px;font-size:10.5px;color:var(--mountain);border-top:1px solid rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <div><b style="color:var(--accent-life)">v4.21</b> · <span id="lastsave">—</span> · <span id="sync-status"></span></div>
+      <div><b style="color:var(--accent-life)">v4.22</b> · <span id="lastsave">—</span> · <span id="sync-status"></span></div>
       <span class="kbd" title="Apri command palette">⌘K</span>
     </div>
   </aside>
@@ -1421,7 +1401,7 @@
         <span class="pill-badge empty">+</span>
       </div>
     
-      <div class="ios-pill  " style="--cat-c:#FF9500" onclick="toggleTodayCatExpand(&#39;h-sveglia&#39;)" title="Sveglia 8h">
+      <div class="ios-pill  " style="--cat-c:#E64980" onclick="toggleTodayCatExpand(&#39;h-sveglia&#39;)" title="Sveglia 8h">
         <span class="pill-pos">3</span>
         <span class="pill-ico">☼</span>
         <span class="pill-name">Sveglia 8h</span>
@@ -1435,7 +1415,7 @@
         <span class="pill-badge empty">+</span>
       </div>
     
-      <div class="ios-pill  " style="--cat-c:#FF9500" onclick="toggleTodayCatExpand(&#39;h-cibo&#39;)" title="Cibo">
+      <div class="ios-pill  " style="--cat-c:#E64980" onclick="toggleTodayCatExpand(&#39;h-cibo&#39;)" title="Cibo">
         <span class="pill-pos">5</span>
         <span class="pill-ico">◎</span>
         <span class="pill-name">Cibo</span>
@@ -2096,13 +2076,13 @@
     <div class="field">
       <label>Mood · 1-5 <span class="task-imp-value" id="me-mood-val" style="float:right;color:#0071E3">3</span></label>
       <div class="task-imp-slider-row">
-        <input id="me-mood" type="range" min="1" max="5" step="1" value="3" oninput="document.getElementById(&#39;me-mood-val&#39;).textContent=this.value" style="background:linear-gradient(90deg,#FF3B30 0%,#FF9500 50%,#34C759 100%) !important">
+        <input id="me-mood" type="range" min="1" max="5" step="1" value="3" oninput="document.getElementById(&#39;me-mood-val&#39;).textContent=this.value" style="background:linear-gradient(90deg,#FF3B30 0%,#E64980 50%,#34C759 100%) !important">
       </div>
     </div>
     <div class="field">
-      <label>Energia · 1-5 <span class="task-imp-value" id="me-energy-val" style="float:right;color:#FF9500">3</span></label>
+      <label>Energia · 1-5 <span class="task-imp-value" id="me-energy-val" style="float:right;color:#E64980">3</span></label>
       <div class="task-imp-slider-row">
-        <input id="me-energy" type="range" min="1" max="5" step="1" value="3" oninput="document.getElementById(&#39;me-energy-val&#39;).textContent=this.value" style="background:linear-gradient(90deg,#86868B 0%,#FF9500 50%,#FFCC00 100%) !important">
+        <input id="me-energy" type="range" min="1" max="5" step="1" value="3" oninput="document.getElementById(&#39;me-energy-val&#39;).textContent=this.value" style="background:linear-gradient(90deg,#86868B 0%,#E64980 50%,#FFCC00 100%) !important">
       </div>
     </div>
     <div class="field"><label>Note (opzionale)</label><textarea id="me-note" placeholder="Cosa è successo oggi che spiega questi numeri?"></textarea></div>
@@ -2294,7 +2274,7 @@
       <div class="cd-row">
         <label>Energia</label>
         <input id="cd-energy" type="range" min="1" max="5" step="1" value="3" oninput="document.getElementById(&#39;cd-energy-val&#39;).textContent=this.value">
-        <span class="task-imp-value" id="cd-energy-val" style="color:#FF9500">3</span>
+        <span class="task-imp-value" id="cd-energy-val" style="color:#E64980">3</span>
       </div>
     </div>
 
@@ -2352,9 +2332,9 @@ const COLOR_MAP = {
 // Ogni gradient va dalla tonalità chiara alla saturata, 135°, come Reminders/Lists su iOS.
 const TILE_GRADIENT = {
   mahogany:    'linear-gradient(135deg,#4E7BFF 0%,#2D6CDF 100%)',  // blu vivace (Skip)
-  terracotta:  'linear-gradient(135deg,#FF9166 0%,#FF6B4A 100%)',  // corallo
+  terracotta:  'linear-gradient(135deg,#FF8787 0%,#FA5252 100%)',  // rosso freddo
   'ok-soft':   'linear-gradient(135deg,#3FD8A4 0%,#12B886 100%)',  // teal-green
-  warn:        'linear-gradient(135deg,#FFC53D 0%,#F59F00 100%)',  // ambra
+  warn:        'linear-gradient(135deg,#F783AC 0%,#E64980 100%)',  // magenta
   plum:        'linear-gradient(135deg,#B57BEC 0%,#9B51E0 100%)',  // viola
   tobacco:     'linear-gradient(135deg,#7C93C7 0%,#5B7DB1 100%)',  // slate-blue (no grigio)
   olive:       'linear-gradient(135deg,#3FD8A4 0%,#0E9C74 100%)',  // verde-teal scuro
@@ -2366,8 +2346,8 @@ const TILE_GRADIENT = {
 function tileBg(colorName){ return TILE_GRADIENT[colorName] || COLOR_MAP[colorName] || 'var(--mahogany)' }
 // Tono scuro di ogni categoria — usato per bordo/testo nelle pill outline (Oggi > Abitudini del mese)
 const CAT_OUTLINE = {
-  mahogany:'#2D6CDF', terracotta:'#FF6B4A', 'ok-soft':'#12B886',
-  warn:'#F59F00',     plum:'#9B51E0',       tobacco:'#5B7DB1',
+  mahogany:'#2D6CDF', terracotta:'#FA5252', 'ok-soft':'#12B886',
+  warn:'#E64980',     plum:'#9B51E0',       tobacco:'#5B7DB1',
   olive:'#0E9C74',    p0:'#F03E3E',         dusk:'#3D5AFE',
   sage:'#0CA5C0',     mountain:'#5C6B92',
 };
@@ -5658,6 +5638,7 @@ function render(){
   else if(v === 'study-bocconi')    c.innerHTML = viewBocconi();
   else if(v === 'uni-calendar')     c.innerHTML = viewCalendar(); // MDBI·Calendario rimosso → calendario unico
   else if(v === 'mdbi' || v === 'uni-subjects' || v === 'uni-week' || v === 'uni-deadlines' || v === 'uni-grades' || v === 'uni-study' || v.startsWith('uni-subject:')) c.innerHTML = viewMdbiHub(v);
+  else if(v.startsWith('hub:'))     c.innerHTML = viewHub(v.slice(4));
   // FINANZE
   else if(v === 'fin-dashboard')    c.innerHTML = viewFinDashboard();
   else if(v === 'fin-transactions') c.innerHTML = viewFinTransactions();
@@ -6367,7 +6348,7 @@ function viewHealthMoodEnergy(){
   const chart = `
     <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="width:100%;height:140px">
       ${polyline(moodPts, '#0071E3')}
-      ${polyline(energyPts, '#FF9500')}
+      ${polyline(energyPts, '#E64980')}
     </svg>
   `;
 
@@ -6386,12 +6367,12 @@ function viewHealthMoodEnergy(){
       </div>
       <div class="me-today-card">
         <div class="eyebrow">Energia oggi</div>
-        <div class="me-big" style="color:#FF9500">${today.energy || '—'}<span>/5</span></div>
+        <div class="me-big" style="color:#E64980">${today.energy || '—'}<span>/5</span></div>
       </div>
       <div class="me-today-card">
         <div class="eyebrow">Avg 7 giorni</div>
         <div class="me-row"><span style="color:#0071E3">●</span> mood <b>${avgMood}</b></div>
-        <div class="me-row"><span style="color:#FF9500">●</span> energia <b>${avgEnergy}</b></div>
+        <div class="me-row"><span style="color:#E64980">●</span> energia <b>${avgEnergy}</b></div>
       </div>
     </div>
 
@@ -6402,7 +6383,7 @@ function viewHealthMoodEnergy(){
       ${chart}
       <div class="me-legend">
         <span><span class="dot" style="background:#0071E3"></span>Mood</span>
-        <span><span class="dot" style="background:#FF9500"></span>Energia</span>
+        <span><span class="dot" style="background:#E64980"></span>Energia</span>
       </div>
     </div>
   `;
@@ -6904,7 +6885,7 @@ function viewGameStats(){
           <div><b>${woSessions.length}</b><span>totali</span></div>
         </div>
         <div class="gs-progress-circ">
-          <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="3"/><circle cx="18" cy="18" r="15.9" fill="none" stroke="#FF9500" stroke-width="3" stroke-linecap="round" transform="rotate(-90 18 18)" stroke-dasharray="${Math.min(100,Math.round(100*wkSessions/wkTarget))} 100"/></svg>
+          <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="3"/><circle cx="18" cy="18" r="15.9" fill="none" stroke="#E64980" stroke-width="3" stroke-linecap="round" transform="rotate(-90 18 18)" stroke-dasharray="${Math.min(100,Math.round(100*wkSessions/wkTarget))} 100"/></svg>
           <span>${Math.min(100,Math.round(100*wkSessions/wkTarget))}%</span>
         </div>
       </div>
@@ -11771,6 +11752,30 @@ function matchUniWithEvents(){
 }
 
 /* ---------- Vista lista materie (15 card) ---------- */
+/* ---------- Hub generici (Salute / Finanze / Review): una pagina a tab ---------- */
+const HUB_VIEW_FN = {
+  'health-workout':viewHealthWorkout,'health-sleep':viewHealthSleep,'food-diary':viewFoodDiary,'food-db':viewFoodDB,'shopping':viewShoppingList,'weight':viewWeight,'health-hydration':viewHealthHydration,'health-mood':viewHealthMoodEnergy,
+  'fin-dashboard':viewFinDashboard,'fin-transactions':viewFinTransactions,'fin-budgets':viewFinBudgets,
+  'review':viewWeeklyReview,'goals':viewGoals,'life-month':viewLifeMonth,'life-charts':viewLifeCharts,'life-years':viewLifeYears,'game-stats':viewGameStats,'focus-history':viewFocusHistory,
+};
+const HUBS = {
+  salute:{eyebrow:'Salute', accent:'var(--accent-food)', tabs:[['health-workout','Workout'],['health-sleep','Sonno'],['food-diary','Cibo'],['food-db','Database'],['shopping','Spesa'],['weight','Peso'],['health-hydration','Idratazione'],['health-mood','Mood']]},
+  fin:{eyebrow:'Finanze', accent:'var(--accent-fin)', tabs:[['fin-dashboard','Dashboard'],['fin-transactions','Transazioni'],['fin-budgets','Budget']]},
+  review:{eyebrow:'Review & Analisi', accent:'var(--accent-life)', tabs:[['review','Weekly review'],['goals','Goals'],['life-month','Mese'],['life-charts','Grafici'],['life-years','Anni'],['game-stats','Stats'],['focus-history','Focus']]},
+};
+function hubTab(hubId, key){ state.hubTab = state.hubTab || {}; state.hubTab[hubId] = key; setView('hub:'+hubId); }
+function viewHub(hubId){
+  const cfg = HUBS[hubId]; if(!cfg) return '';
+  state.hubTab = state.hubTab || {};
+  let active = state.hubTab[hubId] || cfg.tabs[0][0];
+  if(!cfg.tabs.some(t => t[0] === active)) active = cfg.tabs[0][0];
+  const tabbar = `<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:20px;padding:5px;background:var(--paper-warm);border-radius:14px;border:0.5px solid var(--sand);box-shadow:inset 0 1px 2px rgba(16,23,54,0.04)">${
+    cfg.tabs.map(([k,l]) => `<button onclick="hubTab('${hubId}','${k}')" style="flex:1;min-width:90px;border:none;cursor:pointer;border-radius:10px;padding:9px 10px;font-size:12.5px;font-weight:700;font-family:inherit;letter-spacing:-0.01em;transition:all .15s cubic-bezier(.32,.72,0,1);${active===k?`background:${cfg.accent};color:#fff;box-shadow:0 5px 14px -5px ${cfg.accent}`:'background:transparent;color:var(--mountain)'}">${l}</button>`).join('')
+  }</div>`;
+  const fn = HUB_VIEW_FN[active];
+  return tabbar + (fn ? fn() : '');
+}
+
 /* ---------- Hub MDBI: una pagina, sezioni a tab ---------- */
 function mdbiTab(t){ state.uni.tab = t; setView('mdbi'); }
 function viewMdbiHub(v){
@@ -12003,7 +12008,7 @@ function viewUniWeek(){
     const c = uniSubjectColor(subj ? subj.id : null);
     if(subj) weekSubjects.set(subj.id, subj.name);
     nDl++;
-    return { time:'23:59', html: `<div ${edit?`onclick="${edit}" title="Clicca per modificare"`:''} style="padding:9px 11px;border-left:4px solid ${c};background:rgba(255,149,0,0.10);border-radius:8px;margin-bottom:6px;${edit?'cursor:pointer':''}">
+    return { time:'23:59', html: `<div ${edit?`onclick="${edit}" title="Clicca per modificare"`:''} style="padding:9px 11px;border-left:4px solid ${c};background:rgba(230,73,128,0.10);border-radius:8px;margin-bottom:6px;${edit?'cursor:pointer':''}">
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <span style="font-size:10px;font-weight:700;color:#fff;background:var(--warn);padding:2px 8px;border-radius:99px;letter-spacing:0.05em">⚐ DEADLINE</span>
         <span style="font-size:10.5px;font-weight:600;color:${c};text-transform:uppercase">${escapeHTML(subj ? subj.name : '?')}</span>
@@ -12016,7 +12021,7 @@ function viewUniWeek(){
     nEx++;
     const isQuiz = type === 'quiz';
     const tagBg = isQuiz ? 'var(--warn)' : 'var(--p0)';
-    const bg    = isQuiz ? 'rgba(255,149,0,0.10)' : 'rgba(255,45,85,0.09)';
+    const bg    = isQuiz ? 'rgba(230,73,128,0.10)' : 'rgba(255,45,85,0.09)';
     const tag   = isQuiz ? '✎ QUIZ' : (type==='midterm' ? '🎯 MIDTERM' : type==='presentation' ? '🎯 PRESENTAZIONE' : '🎯 ESAME');
     return { time:'09:00', html: `<div ${edit?`onclick="${edit}" title="Clicca per modificare"`:''} style="padding:9px 11px;border-left:4px solid ${c};background:${bg};border-radius:8px;margin-bottom:6px;${edit?'cursor:pointer':''}">
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
@@ -12265,7 +12270,7 @@ function viewUniGrades(){
    UNI CALENDARIO ESAMI · vista mese con esami + assignment
    ========================================================= */
 // Palette di 8 colori SF per le materie (auto-assegnati in base all'indice)
-const UNI_SUBJECT_COLORS = ['#0071E3','#FF9500','#34C759','#AF52DE','#FF2D55','#5856D6','#30B0C7','#FF6B61','#A2845E','#BF5AF2','#FFD60A','#64D2FF','#FF375F','#32ADE6','#66A80F'];
+const UNI_SUBJECT_COLORS = ['#0071E3','#E64980','#34C759','#AF52DE','#FF2D55','#5856D6','#30B0C7','#FF6B61','#A2845E','#BF5AF2','#FFD60A','#64D2FF','#FF375F','#32ADE6','#66A80F'];
 function uniSubjectColor(subId){
   if(!subId) return '#86868B';
   const sub = state.uni.subjects.find(s => s.id === subId);
