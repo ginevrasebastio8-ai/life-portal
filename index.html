@@ -1310,7 +1310,7 @@
 
     <div style="flex:1"></div>
     <div style="padding:12px 16px;font-size:10.5px;color:var(--mountain);border-top:1px solid rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <div><b style="color:var(--accent-life)">v4.23</b> · <span id="lastsave">—</span> · <span id="sync-status"></span></div>
+      <div><b style="color:var(--accent-life)">v4.24</b> · <span id="lastsave">—</span> · <span id="sync-status"></span></div>
       <span class="kbd" title="Apri command palette">⌘K</span>
     </div>
   </aside>
@@ -12255,7 +12255,7 @@ function viewUniStudyPlan(){
     const sub = uniSubjectById(b.sub);
     if(!sub) return '';
     const units = studyBlockUnits(b);
-    const done = units.filter(u => studied[u.id]).length;
+    const done = units.filter(u => u.attended).length;
     totU += units.length; doneU += done;
     const pct = units.length ? Math.round(done/units.length*100) : 0;
     const complete = units.length > 0 && done === units.length;
@@ -12263,10 +12263,10 @@ function viewUniStudyPlan(){
     if(isCurrent) currentFound = true;
     const c = uniSubjectColor(b.sub);
     const unitsHtml = units.map(u => `
-      <div style="display:flex;gap:9px;align-items:center;padding:5px 0;border-bottom:1px dotted rgba(0,0,0,0.06);font-size:12.5px;cursor:pointer" onclick="studyToggleUnit('${u.id}')">
-        <span style="width:16px;height:16px;border-radius:5px;border:1.5px solid ${c};background:${studied[u.id]?c:'transparent'};flex-shrink:0;position:relative">${studied[u.id]?'<span style="position:absolute;left:2px;top:-3px;color:#fff;font-size:12px">✓</span>':''}</span>
+      <div style="display:flex;gap:9px;align-items:center;padding:5px 0;border-bottom:1px dotted rgba(0,0,0,0.06);font-size:12.5px;cursor:pointer" onclick="toggleUniSessionAttended('${u.id}')">
+        <span style="width:16px;height:16px;border-radius:5px;border:1.5px solid ${c};background:${u.attended?c:'transparent'};flex-shrink:0;position:relative">${u.attended?'<span style="position:absolute;left:2px;top:-3px;color:#fff;font-size:12px">✓</span>':''}</span>
         <span style="color:var(--mountain);width:30px;flex-shrink:0">S${u.n}</span>
-        <span style="flex:1;${studied[u.id]?'text-decoration:line-through;color:var(--mountain)':''}">${escapeHTML(u.t)}</span>
+        <span style="flex:1;${u.attended?'text-decoration:line-through;color:var(--mountain)':''}">${escapeHTML(u.t)}</span>
       </div>`).join('');
     return `
       <details class="card" ${isCurrent?'open':''} style="margin-bottom:10px;border-left:4px solid ${complete?'var(--ok)':c};${complete?'background:rgba(52,199,89,0.05);':''}${!isCurrent&&!complete?'opacity:0.75;':''}">
@@ -12293,11 +12293,11 @@ function viewUniStudyPlan(){
       <div class="actions"><button class="ghost" onclick="setView('uni-subjects')">← Materie</button></div>
     </div>
     <div class="grid grid-3" style="gap:12px;margin-bottom:18px">
-      <div class="stat"><div class="lbl">Avanzamento totale</div><div class="num">${overallPct}%</div><div class="lbl" style="text-transform:none;margin-top:2px">${doneU}/${totU} lezioni studiate</div></div>
-      <div class="stat"><div class="lbl">Blocchi completati</div><div class="num">${STUDY_PLAN_BLOCKS.filter(b=>{const u=studyBlockUnits(b);return u.length&&u.every(x=>studied[x.id]);}).length}/${STUDY_PLAN_BLOCKS.length}</div></div>
+      <div class="stat"><div class="lbl">Avanzamento totale</div><div class="num">${overallPct}%</div><div class="lbl" style="text-transform:none;margin-top:2px">${doneU}/${totU} lezioni fatte</div></div>
+      <div class="stat"><div class="lbl">Blocchi completati</div><div class="num">${STUDY_PLAN_BLOCKS.filter(b=>{const u=studyBlockUnits(b);return u.length&&u.every(x=>x.attended);}).length}/${STUDY_PLAN_BLOCKS.length}</div></div>
       <div class="stat"><div class="lbl">Lezioni rimanenti</div><div class="num">${totU-doneU}</div></div>
     </div>
-    <p class="txt-muted" style="font-size:12px;margin-bottom:14px">Una materia alla volta, nell'ordine che hai deciso. Spunta ogni lezione studiata: il blocco "in corso" è sempre il primo non finito.</p>
+    <p class="txt-muted" style="font-size:12px;margin-bottom:14px">Una materia alla volta, nell'ordine che hai deciso. La spunta = lezione frequentata: si aggiornano da sole con presenze/assenze. Il blocco "in corso" è il primo non finito.</p>
     ${blocks}
   `;
 }
