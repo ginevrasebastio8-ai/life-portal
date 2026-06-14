@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Life Portal">
-<meta name="theme-color" content="#FF8FB0">
+<meta name="theme-color" content="#16244A">
 <meta name="mobile-web-app-capable" content="yes">
 <!-- Manifest base64 inline (per installabilità) -->
 <link rel="manifest" id="pwa-manifest-link" href="blob:null/aac73d9d-00bc-4815-8b95-6d4cfce80113">
@@ -22,51 +22,52 @@
   :root{
     /* Palette APPLE NEUTRO — graphite + bianco/grigio chrome, accenti SF semantic */
     /* I nomi delle variabili sono mantenuti per non rompere gli inline style nel body */
-    --vanilla:#FBFBFD;          /* sfondo principale (apple.com gray) */
-    --vanilla-soft:#F5F5F7;     /* fascia intermedia / hover sottili */
-    --tobacco:#48484A;          /* grigio scuro accent secondario (era warm bordeaux) */
-    --mountain:#86868B;         /* testo secondario / muted (SF gray-3) */
-    --mahogany:#1D1D1F;         /* graphite primario — testo + accent forte */
-    --sand:rgba(0,0,0,0.10);    /* hairline borders (1px translucido) */
-    --sand-soft:rgba(0,0,0,0.06); /* hairline più chiaro */
-    --ink:#000000;              /* nero pieno per testo enfatico */
+    /* === PALETTE NAVY + ACCENTI VIVACI (restyle giugno 2026) — nomi invariati === */
+    --vanilla:#F6F8FC;          /* sfondo principale (bianco-azzurro freddo) */
+    --vanilla-soft:#EDF1F9;     /* fascia intermedia / hover sottili */
+    --tobacco:#34457A;          /* navy medio — accent secondario */
+    --mountain:#5C6B92;         /* testo secondario / muted (navy-grey) */
+    --mahogany:#16244A;         /* NAVY profondo — testo primario + accent forte */
+    --sand:rgba(22,36,74,0.12); /* hairline borders (navy translucido) */
+    --sand-soft:rgba(22,36,74,0.07); /* hairline più chiaro */
+    --ink:#0C1736;              /* navy quasi-nero per testo enfatico */
     --paper:#FFFFFF;            /* card — bianco pieno */
-    --paper-warm:#F5F5F7;       /* sidebar / superfici secondarie (chrome gray) */
+    --paper-warm:#EFF3FB;       /* sidebar / superfici secondarie (azzurrino) */
 
-    /* Stati — SF semantic colors */
-    --p0:#FF3B30;               /* system red — alert massimi */
-    --p1:#FF9500;               /* system orange — medio */
-    --p2:#86868B;               /* gray muted */
-    --ok:#34C759;               /* system green — positivo */
-    --ok-soft:#5DD178;          /* system green chiaro */
-    --warn:#FF9500;             /* system orange — assignment */
-    --fail:#FF3B30;             /* system red — scadenze */
+    /* Stati — semantici, vivaci */
+    --p0:#F03E3E;               /* rosso — alert massimi */
+    --p1:#F59F00;               /* ambra — medio */
+    --p2:#5C6B92;               /* navy-grey muted */
+    --ok:#12B886;               /* verde-teal — positivo */
+    --ok-soft:#63D9B0;          /* verde-teal chiaro */
+    --warn:#F59F00;             /* ambra — assignment */
+    --fail:#F03E3E;             /* rosso — scadenze */
 
-    /* Accenti decorativi (categorie habit) — SF palette */
-    --olive:#34C759;            /* system green */
-    --terracotta:#FF9500;       /* system orange */
-    --plum:#AF52DE;             /* system purple */
-    --sage:#30B0C7;             /* system teal */
-    --dusk:#5856D6;             /* system indigo */
+    /* Accenti decorativi (categorie habit) — vivaci e distinti */
+    --olive:#12B886;            /* teal-green */
+    --terracotta:#FF6B4A;       /* corallo */
+    --plum:#9B51E0;             /* viola */
+    --sage:#0CA5C0;             /* ottanio */
+    --dusk:#3D5AFE;             /* indaco vivace */
 
-    /* Accenti modulo — SF semantic palette, distinti e leggibili */
-    --accent-life:#34C759;      /* vita — green */
-    --accent-life-soft:#E5F8EA;
-    --accent-food:#FF9500;      /* cibo — orange */
-    --accent-food-soft:#FFF1E0;
-    --accent-fin:#AF52DE;       /* finanze — purple */
-    --accent-fin-soft:#F5ECFB;
-    --accent-skip:#0071E3;      /* skip — Apple blue */
-    --accent-skip-soft:#E5F0FA;
-    --accent-content:#FF2D55;   /* content — system pink */
-    --accent-content-soft:#FCE6EB;
-    --accent-uni:#5856D6;       /* uni — system indigo */
-    --accent-uni-soft:#ECECF8;
-    --accent-sys:#8E8E93;       /* sys — gray */
+    /* Accenti modulo — navy + accenti vivaci, distinti per categoria */
+    --accent-life:#FF6B4A;      /* vita — corallo */
+    --accent-life-soft:#FFE9E2;
+    --accent-food:#12B886;      /* salute — teal */
+    --accent-food-soft:#DCF7EE;
+    --accent-fin:#F59F00;       /* finanze — ambra */
+    --accent-fin-soft:#FFF1DC;
+    --accent-skip:#2D6CDF;      /* skip — blu */
+    --accent-skip-soft:#E2ECFB;
+    --accent-content:#9B51E0;   /* content — viola */
+    --accent-content-soft:#F1E6FB;
+    --accent-uni:#3D5AFE;       /* studio — indaco vivace */
+    --accent-uni-soft:#E5E9FF;
+    --accent-sys:#5B7DB1;       /* sistema — slate-blue */
 
-    /* Ombre Apple-style: layered, soffici, neutre */
-    --shadow:0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.05);
-    --shadow-hover:0 2px 6px rgba(0,0,0,0.06), 0 12px 32px rgba(0,0,0,0.08);
+    /* Ombre: layered, soffici, leggera tinta navy */
+    --shadow:0 1px 2px rgba(16,23,54,0.05), 0 8px 24px rgba(16,23,54,0.07);
+    --shadow-hover:0 2px 6px rgba(16,23,54,0.08), 0 14px 34px rgba(16,23,54,0.12);
 
     /* Font stacks Apple — SF Pro nativo, New York per moments display */
     --font-sans:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Segoe UI',system-ui,Helvetica,Arial,sans-serif;
@@ -1310,7 +1311,7 @@
 
     <div style="flex:1"></div>
     <div style="padding:12px 16px;font-size:10.5px;color:var(--mountain);border-top:1px solid rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <div><b style="color:var(--accent-life)">v4.15</b> · <span id="lastsave">—</span> · <span id="sync-status"></span></div>
+      <div><b style="color:var(--accent-life)">v4.16</b> · <span id="lastsave">—</span> · <span id="sync-status"></span></div>
       <span class="kbd" title="Apri command palette">⌘K</span>
     </div>
   </aside>
