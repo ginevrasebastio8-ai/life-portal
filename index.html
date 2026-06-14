@@ -1310,7 +1310,7 @@
 
     <div style="flex:1"></div>
     <div style="padding:12px 16px;font-size:10.5px;color:var(--mountain);border-top:1px solid rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <div><b style="color:var(--accent-life)">v4.12</b> · <span id="lastsave">—</span> · <span id="sync-status"></span></div>
+      <div><b style="color:var(--accent-life)">v4.13</b> · <span id="lastsave">—</span> · <span id="sync-status"></span></div>
       <span class="kbd" title="Apri command palette">⌘K</span>
     </div>
   </aside>
@@ -3223,8 +3223,8 @@ let _autoPushTimer = null;
 function scheduleAutoPush(){
   if(!gistAutoEnabled()) return;
   clearTimeout(_autoPushTimer);
-  _autoPushTimer = setTimeout(() => gistPushSilent(), 30000);  // 30s dopo l'ultima modifica
-  setSyncStatus('☁ in attesa di sync…');
+  _autoPushTimer = setTimeout(() => gistPushSilent(), 2500);  // ~istantaneo: 2,5s dopo l'ultima modifica
+  setSyncStatus('☁ sync…');
 }
 async function gistPushSilent(){
   const cfg = gistCfg(); if(!cfg.token || !cfg.gistId) return;
@@ -3270,12 +3270,48 @@ async function gistAutoPullOnLoad(){
     location.reload();
   }catch(e){ setSyncStatus('☁ offline'); }
 }
-// Push best-effort quando chiudi/lasci la pagina con modifiche non sincronizzate
+// Pull silenzioso (focus / poll): applica il cloud SOLO se non ho modifiche locali non sincronizzate.
+// Niente prompt ripetuti: se entrambi sono cambiati, lascio che il push porti su le locali.
+let _gistPulling = false;
+async function gistQuietPull(){
+  if(!gistAutoEnabled() || _gistPulling) return;
+  const cfg = gistCfg();
+  const localSave = Number(localStorage.getItem('skip_portal_last_save_ts')||0);
+  const base = _gistBaseTs();
+  if(localSave > base + 3000){ scheduleAutoPush(); return; }   // ho modifiche locali → prima le carico
+  _gistPulling = true;
+  try{
+    const r = await fetch(`https://api.github.com/gists/${cfg.gistId}`, {
+      headers:{ 'Authorization':'token ' + cfg.token, 'Accept':'application/vnd.github+json' }
+    });
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    const file = j.files['life-portal-state.json'];
+    if(!file || !file.content || file.content.trim() === '{}'){ _gistPulling = false; return; }
+    const remoteTs = Date.parse(j.updated_at || 0);
+    if(remoteTs > _gistBaseTs() + 3000 && file.content !== localStorage.getItem(STORAGE_KEY)){
+      localStorage.setItem(STORAGE_KEY, file.content);
+      localStorage.setItem('skip_portal_gist_lastpull', String(Date.now()));
+      setSyncStatus('☁ aggiornato dal cloud');
+      location.reload();
+      return;
+    }
+    setSyncStatus('☁ allineato');
+  }catch(e){ setSyncStatus('☁ offline'); }
+  _gistPulling = false;
+}
+// Quando torni sull'app: push se hai modifiche, poi pull dal cloud → l'altro dispositivo ti raggiunge
 document.addEventListener('visibilitychange', () => {
-  if(document.visibilityState === 'hidden' && gistAutoEnabled()){
+  if(!gistAutoEnabled()) return;
+  if(document.visibilityState === 'hidden'){
     if(Number(localStorage.getItem('skip_portal_last_save_ts')||0) > _gistBaseTs()) gistPushSilent();
+  } else if(document.visibilityState === 'visible'){
+    gistQuietPull();
   }
 });
+window.addEventListener('focus', () => { if(gistAutoEnabled()) gistQuietPull(); });
+// Poll periodico mentre l'app è aperta e in primo piano (~ogni 25s)
+setInterval(() => { if(gistAutoEnabled() && document.visibilityState === 'visible') gistQuietPull(); }, 25000);
 
 // Funzione esposta per ri-scaricare il backup manualmente (es. dalle Impostazioni)
 function downloadArchivedV3(){
