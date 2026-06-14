@@ -1327,7 +1327,7 @@
 
     <div style="flex:1"></div>
     <div style="padding:12px 16px;font-size:10.5px;color:var(--mountain);border-top:1px solid rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <div><b style="color:var(--accent-life)">v4.19</b> · <span id="lastsave">—</span> · <span id="sync-status"></span></div>
+      <div><b style="color:var(--accent-life)">v4.20</b> · <span id="lastsave">—</span> · <span id="sync-status"></span></div>
       <span class="kbd" title="Apri command palette">⌘K</span>
     </div>
   </aside>
@@ -2400,12 +2400,11 @@ const DEFAULT_NOTES = [];
 
 // Default habit categories for a new month (based on Ginni's paper system)
 const DEFAULT_HABIT_CATS = [
-  { id:'h-skip',    name:'Skip',       ico:'◆', color:'mahogany',   linkedTo:'skip' },
-  { id:'h-workout', name:'Workout',    ico:'✦', color:'ok-soft',    linkedTo:'' },
-  { id:'h-sveglia', name:'Sveglia 8h', ico:'☼', color:'warn',       linkedTo:'' },
-  { id:'h-uni',     name:'Uni/Tesi',   ico:'◉', color:'tobacco',    linkedTo:'' },
-  { id:'h-mdbi',    name:'MDBI',       ico:'▤', color:'sage',       linkedTo:'mdbi' },
-  { id:'h-cibo',    name:'Cibo',       ico:'◎', color:'terracotta', linkedTo:'food' },
+  { id:'h-sveglia', name:'Sveglia', ico:'☼', color:'warn',       linkedTo:'' },
+  { id:'h-workout', name:'Workout', ico:'✦', color:'ok-soft',    linkedTo:'' },
+  { id:'h-cibo',    name:'Cibo',    ico:'◎', color:'terracotta', linkedTo:'food' },
+  { id:'h-mdbi',    name:'MDBI',    ico:'▤', color:'sage',       linkedTo:'mdbi' },
+  { id:'h-bocconi', name:'Bocconi', ico:'▣', color:'dusk',       linkedTo:'thesis' },
 ];
 
 // 12 pasti del piano maggio 2026 — 1200 kcal/giorno, 100P/120C/35F target — FINALE Ginni 2026-05-01
@@ -3860,6 +3859,22 @@ function loadState(){
           { id:'wp-gluteo',  dow:5, title:'I Love Gluteo',        start:'17:00', end:'17:30' }
         );
         localStorage.setItem(WK_PLAN_KEY, '1');
+        saveState();
+      }
+    }
+    // Riordino categorie habit (richiesta Ginni 15/6): Sveglia · Workout · Cibo · MDBI · Bocconi (no Skip, Uni/Tesi→Bocconi)
+    const HABIT_REORDER_KEY = 'skip_portal_habit_reorder_2026_06_15';
+    if(!localStorage.getItem(HABIT_REORDER_KEY)){
+      const mkR = monthKey(new Date());
+      if(state.habitMonths[mkR]){
+        state.habitMonths[mkR].cats = [
+          { id:'h-sveglia', name:'Sveglia', ico:'☼', color:'warn',       linkedTo:'' },
+          { id:'h-workout', name:'Workout', ico:'✦', color:'ok-soft',    linkedTo:'' },
+          { id:'h-cibo',    name:'Cibo',    ico:'◎', color:'terracotta', linkedTo:'food' },
+          { id:'h-mdbi',    name:'MDBI',    ico:'▤', color:'sage',       linkedTo:'mdbi' },
+          { id:'h-bocconi', name:'Bocconi', ico:'▣', color:'dusk',       linkedTo:'thesis' },
+        ];
+        localStorage.setItem(HABIT_REORDER_KEY, '1');
         saveState();
       }
     }
