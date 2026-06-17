@@ -1310,7 +1310,7 @@
 
     <div style="flex:1"></div>
     <div style="padding:12px 16px;font-size:10.5px;color:var(--mountain);border-top:1px solid rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <div><b style="color:var(--accent-life)">v4.27</b> · <span id="lastsave">—</span> · <span id="sync-status"></span></div>
+      <div><b style="color:var(--accent-life)">v4.28</b> · <span id="lastsave">—</span> · <span id="sync-status"></span></div>
       <span class="kbd" title="Apri command palette">⌘K</span>
     </div>
   </aside>
@@ -1690,7 +1690,7 @@
       </select>
     </div>
     <div class="field">
-      <label>Categorie collegate (uno o più)</label>
+      <label>Categorie collegate <span style="color:var(--p0)">*</span> <span style="font-weight:400;color:var(--mountain);font-size:11px">— obbligatoria: collega l'evento all'abitudine del giorno</span></label>
       <div id="evf-cats" style="display:flex;flex-wrap:wrap;gap:6px;background:var(--vanilla-soft);padding:10px;border-radius:10px"></div>
     </div>
     <div class="field"><label>Note</label><textarea id="evf-notes" style="min-height:60px" placeholder=""></textarea></div>
@@ -4828,8 +4828,11 @@ function closeEventModal(){ document.getElementById('eventModal').classList.remo
 function saveEvent(){
   const title = document.getElementById('evf-title').value.trim();
   if(!title){ alert('Titolo obbligatorio'); return }
+  const catBoxes = document.querySelectorAll('#evf-cats input[type=checkbox]');
   const catIds = [];
   document.querySelectorAll('#evf-cats input[type=checkbox]:checked').forEach(cb => catIds.push(cb.dataset.cat));
+  // Categoria obbligatoria: ogni evento del plan deve collegarsi a un'abitudine del giorno
+  if(catBoxes.length && !catIds.length){ alert('Scegli almeno una categoria collegata — serve per far spuntare l\'abitudine del giorno quando completi l\'evento.'); return }
   const payload = {
     title,
     date: document.getElementById('evf-date').value || toISO(new Date()),
