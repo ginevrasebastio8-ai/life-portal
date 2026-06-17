@@ -1310,7 +1310,7 @@
 
     <div style="flex:1"></div>
     <div style="padding:12px 16px;font-size:10.5px;color:var(--mountain);border-top:1px solid rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <div><b style="color:var(--accent-life)">v4.26</b> · <span id="lastsave">—</span> · <span id="sync-status"></span></div>
+      <div><b style="color:var(--accent-life)">v4.27</b> · <span id="lastsave">—</span> · <span id="sync-status"></span></div>
       <span class="kbd" title="Apri command palette">⌘K</span>
     </div>
   </aside>
@@ -4088,6 +4088,24 @@ function toggleTodayCatExpand(catId){
   Object.keys(state._todayExpand).forEach(k => { state._todayExpand[k] = false; });
   // Toggle this one
   state._todayExpand[catId] = !wasOpen;
+  render();
+}
+
+// Navigazione giorno nella pagina Oggi: permette di spuntare categorie anche
+// nei giorni passati (recupero retroattivo). Mai oltre oggi (no futuro).
+function shiftTodayView(n){
+  const realToday = toISO(new Date());
+  const base = state._todayView || realToday;
+  const d = new Date(base + 'T00:00:00'); d.setDate(d.getDate()+n);
+  let iso = toISO(d);
+  if(iso > realToday) iso = realToday;   // niente futuro
+  state._todayView = iso;
+  state._todayExpand = {};               // chiudi pannelli aperti del giorno precedente
+  render();
+}
+function resetTodayView(){
+  state._todayView = toISO(new Date());
+  state._todayExpand = {};
   render();
 }
 
@@ -8411,12 +8429,16 @@ function viewFocusHistory(){
 }
 
 function viewLifeToday(){
-  const today = toISO(new Date());
-  const mk = monthKey(new Date());
+  const realToday = toISO(new Date());
+  if(!state._todayView || state._todayView > realToday) state._todayView = realToday;
+  const today = state._todayView;
+  const selDate = new Date(today + 'T00:00:00');
+  const isToday = today === realToday;
+  const mk = monthKey(selDate);
   const m = state.habitMonths[mk];
   const cats = m?.cats || [];
   const score = dayScore(today);
-  const wn = weekOfMonth(new Date());
+  const wn = weekOfMonth(selDate);
   const wg = m?.weeklyGoals?.['w'+wn] || {};
 
   const slotNames = { breakfast:'Colaz', lunch:'Pranzo', snack:'Snack', dinner:'Cena' };
@@ -8646,8 +8668,9 @@ function viewLifeToday(){
   // === Hero header ===
   const now = new Date();
   const hour = now.getHours();
-  const greet = hour < 6 ? 'Notte fonda' : hour < 12 ? 'Buongiorno' : hour < 14 ? 'Mezzogiorno' : hour < 18 ? 'Buon pomeriggio' : hour < 22 ? 'Buonasera' : 'Buonanotte';
-  const dateLabel = now.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
+  const greetBase = hour < 6 ? 'Notte fonda' : hour < 12 ? 'Buongiorno' : hour < 14 ? 'Mezzogiorno' : hour < 18 ? 'Buon pomeriggio' : hour < 22 ? 'Buonasera' : 'Buonanotte';
+  const greet = isToday ? `${greetBase}, Ginni` : 'Recupero giornata';
+  const dateLabel = selDate.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
   const pctVal = score.total ? Math.round(score.pct*100) : 0;
   const ringColor = score.pos===true ? 'var(--ok)' : (score.pos===false ? 'var(--p0)' : 'var(--mahogany)');
 
@@ -8668,8 +8691,14 @@ function viewLifeToday(){
       <!-- HEADER COMPATTO -->
       <div class="ios-today-head">
         <div>
-          <div class="ios-hero-greet">${greet}, Ginni</div>
-          <h1 class="ios-hero-date">${dateLabel}</h1>
+          <div class="ios-hero-greet">${greet}</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <button onclick="shiftTodayView(-1)" title="giorno precedente" style="width:30px;height:30px;border-radius:50%;border:0.5px solid var(--sand);background:linear-gradient(180deg,#FFFFFF,#F7F9FE);color:var(--mahogany);font-size:18px;line-height:1;cursor:pointer;box-shadow:0 4px 12px -8px rgba(16,23,54,0.3);display:inline-flex;align-items:center;justify-content:center">‹</button>
+            <h1 class="ios-hero-date" style="margin:0">${dateLabel}</h1>
+            <button onclick="shiftTodayView(1)" ${isToday?'disabled':''} title="giorno successivo" style="width:30px;height:30px;border-radius:50%;border:0.5px solid var(--sand);background:linear-gradient(180deg,#FFFFFF,#F7F9FE);color:var(--mahogany);font-size:18px;line-height:1;cursor:${isToday?'default':'pointer'};opacity:${isToday?'0.35':'1'};box-shadow:0 4px 12px -8px rgba(16,23,54,0.3);display:inline-flex;align-items:center;justify-content:center">›</button>
+            ${isToday ? '' : `<button onclick="resetTodayView()" title="torna a oggi" style="background:var(--accent-uni);color:#fff;border:none;padding:6px 13px;border-radius:99px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px -6px var(--accent-uni)">torna a oggi →</button>`}
+          </div>
+          ${isToday ? '' : `<div style="margin-top:7px;font-size:11.5px;color:var(--accent-uni);font-weight:600;display:flex;align-items:center;gap:6px"><span style="font-size:13px">↺</span> Recupero retroattivo — spunta le categorie che avevi dimenticato.</div>`}
           <div style="display:flex;align-items:center;gap:12px;margin-top:8px;flex-wrap:wrap">${moodHtml}${routineHtml}</div>
         </div>
         <div class="ios-today-metrics">
